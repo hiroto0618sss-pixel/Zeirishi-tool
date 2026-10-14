@@ -1,0 +1,11 @@
+{
+  "name": "zeirishi-tool",
+  "version": "0.1.0",
+  "private": true,
+  "description": "税理士業務で使うツール集（税務期限エンジン）",
+  "license": "UNLICENSED",
+  "scripts": {
+    "test": "node --test",
+    "update-holidays": "node scripts/update-holidays.mjs"
+  }
+}
