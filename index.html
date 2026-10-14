@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>税務期限エンジン</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>税務期限エンジン</h1>
+    <p class="lead">顧問先の基本情報から、対象年（1月1日〜12月31日）に期限が来る申告・納付の一覧を作ります。</p>
+  </header>
+
+  <main>
+    <form id="form" class="panel" novalidate>
+      <fieldset>
+        <legend>基本情報</legend>
+        <div class="row">
+          <span class="label">区分</span>
+          <label class="choice"><input type="radio" name="entityType" value="corporation" checked> 法人</label>
+          <label class="choice"><input type="radio" name="entityType" value="individual"> 個人</label>
+        </div>
+        <div class="row">
+          <label class="label" for="year">対象年</label>
+          <input id="year" name="year" type="number" min="1955" max="2999" step="1" required class="num-short">
+          <span class="hint" id="yearHint"></span>
+        </div>
+        <div class="row">
+          <span class="label">源泉所得税</span>
+          <label class="choice"><input type="checkbox" name="withholdingSpecial"> 納期の特例の承認あり</label>
+        </div>
+      </fieldset>
+
+      <fieldset id="corpFields">
+        <legend>法人の情報</legend>
+        <div class="row">
+          <label class="label" for="fiscalEndMonth">決算月</label>
+          <select id="fiscalEndMonth" name="fiscalEndMonth"></select>
+          <span class="hint">事業年度は12か月・月末決算として計算します。</span>
+        </div>
+        <div class="row">
+          <span class="label">申告期限の延長特例</span>
+          <label class="choice"><input type="checkbox" name="corpTaxExtension"> 法人税</label>
+          <label class="choice"><input type="checkbox" name="consumptionTaxExtension"> 消費税</label>
+        </div>
+        <div class="row">
+          <label class="label" for="prevCorpTax">前期の法人税額</label>
+          <input id="prevCorpTax" name="prevCorpTax" type="text" inputmode="numeric" placeholder="例: 1,200,000" class="num">
+          <span class="unit">円</span>
+          <span class="hint">中間申告の要否を判定します（空欄なら判定しません）。</span>
+        </div>
+        <div class="row">
+          <label class="label" for="prevConsumptionTax">前期の消費税額</label>
+          <input id="prevConsumptionTax" name="prevConsumptionTax" type="text" inputmode="numeric" placeholder="例: 3,000,000" class="num">
+          <span class="unit">円</span>
+          <span class="hint">確定消費税額の国税分（地方消費税を含まない額）。中間申告の回数を判定します。</span>
+        </div>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit" class="primary">期限を計算</button>
+        <button type="button" id="csvButton" disabled>CSVで書き出す</button>
+      </div>
+      <p id="errors" class="errors" role="alert" hidden></p>
+    </form>
+
+    <section id="result" class="panel" hidden>
+      <h2 id="resultTitle"></h2>
+      <ul id="warnings" class="warnings"></ul>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">期限日</th>
+              <th scope="col">税目</th>
+              <th scope="col">手続</th>
+              <th scope="col">対象期間</th>
+              <th scope="col">根拠条文</th>
+              <th scope="col">備考</th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="footnote">
+        期限が土日・祝日・年末年始（12/29〜1/3）に当たる場合は、翌日以後で最初の平日にずらしています（国税: 通法10②、地方税: 地方税法20の5②）。
+        ずらした期限には法定の期限を併記しています。
+      </p>
+    </section>
+
+    <section class="panel notice">
+      <h2>ご利用にあたって</h2>
+      <ul>
+        <li>このツールは期限の目安を示すものです。個別の事情（設立初年度、決算期変更、課税期間の特例、災害による期限延長など）は反映していません。</li>
+        <li>入力した内容はこのブラウザの中だけで計算に使い、どこにも送信・保存しません。</li>
+        <li>祝日データ: 内閣府「国民の祝日について」の公表データ（<span id="holidayRange"></span>）。</li>
+      </ul>
+    </section>
+  </main>
+
+  <script src="data/holidays.js"></script>
+  <script src="src/deadlines.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

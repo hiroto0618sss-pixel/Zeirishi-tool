@@ -159,6 +159,7 @@
       procedure: fields.procedure,
       period: fields.period,
       basis: fields.basis,
+      statutoryBasis: fields.basis, // 休日延長の条文を付ける前の根拠条文
       holidayRule: holidayRule,
       note: fields.note || '',
       category: fields.category,
